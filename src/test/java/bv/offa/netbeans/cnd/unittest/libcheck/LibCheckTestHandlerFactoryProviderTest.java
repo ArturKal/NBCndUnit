@@ -18,41 +18,24 @@
  * along with NBCndUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package bv.offa.netbeans.cnd.unittest.api;
+package bv.offa.netbeans.cnd.unittest.libcheck;
 
-/**
- * The enum {@code TestFramework} represents test frameworks.
- *
- * @author offa
- */
-public enum TestFramework
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.netbeans.modules.cnd.testrunner.spi.TestHandlerFactoryProvider;
+
+@Tag("Test-Framework")
+@Tag("LibCheck")
+public class LibCheckTestHandlerFactoryProviderTest
 {
-    /** CppUTest. */
-    CPPUTEST("CppUTest"),
-    /** GoogleTest / GoogleMock. */
-    GOOGLETEST("GoogleTest"),
-    /** LibunittestC++. */
-    LIBUNITTESTCPP("LibunittestCpp"),
-    /** LibCheck. */
-    LibCheck("LibCheck");
 
-
-    private final String name;
-
-
-    private TestFramework(String name)
+    @Test
+    public void getFactoryReturnsInstance()
     {
-        this.name = name;
+        TestHandlerFactoryProvider provider = new LibCheckTestHandlerFactoryProvider();
+        assertEquals(LibCheckTestHandlerFactory.class, provider.getFactory().getClass());
     }
 
 
-    /**
-     * Returns the name of the framework.
-     *
-     * @return  Name
-     */
-    public String getName()
-    {
-        return name;
-    }
 }

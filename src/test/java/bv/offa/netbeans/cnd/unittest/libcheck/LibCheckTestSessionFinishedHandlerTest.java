@@ -17,12 +17,13 @@
  * You should have received a copy of the GNU General Public License
  * along with NBCndUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
-package bv.offa.netbeans.cnd.unittest.libunittestcpp;
+
+package bv.offa.netbeans.cnd.unittest.libcheck;
 
 import bv.offa.netbeans.cnd.unittest.api.ManagerAdapter;
 import static bv.offa.netbeans.cnd.unittest.testhelper.Helper.checkedMatch;
-import java.util.regex.Matcher;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -37,12 +38,12 @@ import org.openide.filesystems.FileUtil;
 import org.openide.util.Lookup;
 
 @Tag("Test-Framework")
-@Tag("LibUnittestCpp")
-public class LibunittestCppTestSessionFinishedHandlerTest
+@Tag("LibCheck")
+public class LibCheckTestSessionFinishedHandlerTest
 {
     private static Project project;
     private static Report report;
-    private LibunittestCppTestSessionFinishedHandler handler;
+    private LibCheckTestSessionFinishedHandler handler;
     private TestSession session;
     private ManagerAdapter manager;
 
@@ -59,7 +60,7 @@ public class LibunittestCppTestSessionFinishedHandlerTest
     @BeforeEach
     public void setUp()
     {
-        handler = new LibunittestCppTestSessionFinishedHandler();
+        handler = new LibCheckTestSessionFinishedHandler();
         session = mock(TestSession.class);
         manager = mock(ManagerAdapter.class);
     }
@@ -67,29 +68,24 @@ public class LibunittestCppTestSessionFinishedHandlerTest
     @Test
     public void matchesSuccessfulTest()
     {
-        assertTrue(handler.matches("Ran 60 tests in 0.100471s"));
-        assertTrue(handler.matches("Ran 5 tests in 127.000288703s"));
-    }
-
-    @Test
-    public void parseDataSuccessfulTest()
-    {
-        Matcher m = checkedMatch(handler, "Ran 5 tests in 127.000288703s");
-        assertEquals("127.000288703", m.group(1));
+        assertTrue(handler.matches("1..6"));
+        assertTrue(handler.matches("1..12345"));
     }
 
     @Test
     public void rejectsMalformedTests()
     {
-        assertFalse(handler.matches("Ran 2 tests in"));
-        assertFalse(handler.matches("Ran 2 tests in "));
+        assertFalse(handler.matches("1.6"));
+        assertFalse(handler.matches("1...6"));
+        assertFalse(handler.matches("1..a"));
+        assertFalse(handler.matches("1 .. 6234"));
     }
 
     @Test
     public void updateUIDisplaysReport()
     {
-        checkedMatch(handler, "Ran 5 tests in 127.000288703s");
-        when(session.getReport(127000l)).thenReturn(report);
+        checkedMatch(handler, "1..12345");
+        when(session.getReport(0l)).thenReturn(report);
         handler.updateUI(manager, session);
         verify(manager).displayReport(session, report);
     }
@@ -97,7 +93,7 @@ public class LibunittestCppTestSessionFinishedHandlerTest
     @Test
     public void udpateUIFinishesSession()
     {
-        checkedMatch(handler, "Ran 5 tests in 127.000288703s");
+        checkedMatch(handler, "1..12345");
         handler.updateUI(manager, session);
         verify(manager).sessionFinished(session);
     }

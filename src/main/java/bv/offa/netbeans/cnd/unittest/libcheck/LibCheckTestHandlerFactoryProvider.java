@@ -18,41 +18,31 @@
  * along with NBCndUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package bv.offa.netbeans.cnd.unittest.api;
+package bv.offa.netbeans.cnd.unittest.libcheck;
+
+import org.netbeans.modules.cnd.testrunner.spi.TestHandlerFactory;
+import org.netbeans.modules.cnd.testrunner.spi.TestHandlerFactoryProvider;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
- * The enum {@code TestFramework} represents test frameworks.
+ * The class {@code LibCheckTestHandlerFactoryProvider} implements a
+ * service that provides test handler for <i>LibCheck</i> unit tests.
  *
  * @author offa
  */
-public enum TestFramework
+@ServiceProvider(service = TestHandlerFactoryProvider.class)
+public class LibCheckTestHandlerFactoryProvider implements TestHandlerFactoryProvider
 {
-    /** CppUTest. */
-    CPPUTEST("CppUTest"),
-    /** GoogleTest / GoogleMock. */
-    GOOGLETEST("GoogleTest"),
-    /** LibunittestC++. */
-    LIBUNITTESTCPP("LibunittestCpp"),
-    /** LibCheck. */
-    LibCheck("LibCheck");
-
-
-    private final String name;
-
-
-    private TestFramework(String name)
-    {
-        this.name = name;
-    }
-
-
+    
     /**
-     * Returns the name of the framework.
+     * Creates a test handler factory.
      *
-     * @return  Name
+     * @return  Test handler factory
      */
-    public String getName()
+    @Override
+    public TestHandlerFactory getFactory()
     {
-        return name;
+        return new LibCheckTestHandlerFactory();
     }
+
 }

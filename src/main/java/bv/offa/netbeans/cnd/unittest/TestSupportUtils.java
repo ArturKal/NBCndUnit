@@ -23,7 +23,6 @@ package bv.offa.netbeans.cnd.unittest;
 import bv.offa.netbeans.cnd.unittest.api.CndTestCase;
 import bv.offa.netbeans.cnd.unittest.api.CndTestSuite;
 import bv.offa.netbeans.cnd.unittest.api.FailureInfo;
-import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.netbeans.api.project.Project;
@@ -93,8 +92,16 @@ public final class TestSupportUtils
      */
     public static void goToSourceOfTestSuite(Project project, CndTestSuite testSuite)
     {
-        final String uniqueDecl = TestSupportUtils.getUniqueDeclarationName(testSuite);
-        goToDeclaration(project, uniqueDecl);
+        try
+        {
+            final String uniqueDecl = getUniqueDeclarationName(testSuite);
+            goToDeclaration(project, uniqueDecl);
+        }
+        catch( IllegalArgumentException ex )
+        {
+            LOGGER.log(Level.INFO, "No declaration found for {0}: {1}",
+                        new Object[]{ testSuite.getName(), ex.getLocalizedMessage() });
+        }
     }
 
 
@@ -109,8 +116,17 @@ public final class TestSupportUtils
      */
     public static void goToSourceOfTestCase(Project project, CndTestCase testCase)
     {
-        final String uniqueDecl = getUniqueDeclarationName(testCase);
-        goToDeclaration(project, uniqueDecl);
+        try
+        {
+            final String uniqueDecl = getUniqueDeclarationName(testCase);
+            goToDeclaration(project, uniqueDecl);
+        }
+        catch( IllegalArgumentException ex )
+        {
+            LOGGER.log(Level.INFO, "No declaration found for {0}::{1}: {2}",
+                        new Object[]{ testCase.getClassName(), testCase.getName(),
+                                        ex.getLocalizedMessage() });
+        }
     }
 
 
